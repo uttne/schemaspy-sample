@@ -1,0 +1,32 @@
+version: '3'
+services:
+    db:
+        image: mcr.microsoft.com/mssql/server:2019-CU6-ubuntu-16.04
+        container_name: schemaspy-sqlserver
+        environment: 
+            - ACCEPT_EULA=Y
+            - SA_PASSWORD=Password@12345
+            - MSSQL_PID=Express
+        networks: 
+            - schemaspy_net
+    tool:
+        image: mcr.microsoft.com/mssql-tools
+        container_name: mssql-tools
+        command: /opt/mssql-tools/bin/sqlcmd -S schemaspy-sqlserver -U sa -P Password@12345 -i /create_db.sql
+        volumes: 
+            - ./create_db.sql:/create_db.sql
+        networks: 
+            - schemaspy_net
+    schemaspy:
+        image: schemaspy/schemaspy:snapshot
+        container_name: schemaspy
+        volumes: 
+            - ./output:/output
+            - ./schemaspy.properties:/schemaspy.properties
+            - ./sqljdbc_8.4/jpn/mssql-jdbc-8.4.1.jre8.jar:/drivers/mssql-jdbc-8.4.1.jre8.jar
+        networks: 
+            - schemaspy_net
+        command: -vizjs
+networks:
+    schemaspy_net:
+        external: false
