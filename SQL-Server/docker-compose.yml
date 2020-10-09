@@ -3,14 +3,14 @@ services:
     # SQL Server を立ち上げる
     db:
         image: mcr.microsoft.com/mssql/server:2019-CU6-ubuntu-16.04
-        container_name: schemaspy-sqlserver
+        container_name: ${SQLSERVER_HOST}
         environment: 
             - ACCEPT_EULA=Y
-            - SA_PASSWORD=Password@12345
+            - SA_PASSWORD=${SQLSERVER_PASS}
             - MSSQL_PID=Express
         networks: 
             - schemaspy_net
-    
+
     # SQL Server の立ち上がりを待機する
     wait_db:
         image: mcr.microsoft.com/mssql-tools
@@ -29,7 +29,7 @@ services:
     create_db:
         image: mcr.microsoft.com/mssql-tools
         container_name: mssql-tools
-        command: /opt/mssql-tools/bin/sqlcmd -S schemaspy-sqlserver -U sa -P Password@12345 -i /sql/create_db.sql
+        command: /opt/mssql-tools/bin/sqlcmd -S ${SQLSERVER_HOST} -U ${SQLSERVER_USER} -P ${SQLSERVER_PASS} -i /sql/create_db.sql
         volumes: 
             - ./sql:/sql
         networks: 
@@ -37,7 +37,7 @@ services:
     create_table:
         image: mcr.microsoft.com/mssql-tools
         container_name: mssql-tools
-        command: /opt/mssql-tools/bin/sqlcmd -S schemaspy-sqlserver -U sa -P Password@12345 -i /sql/create_table.sql
+        command: /opt/mssql-tools/bin/sqlcmd -S ${SQLSERVER_HOST} -U ${SQLSERVER_USER} -P ${SQLSERVER_PASS} -i /sql/create_table.sql
         volumes: 
             - ./sql:/sql
         networks: 
@@ -45,7 +45,7 @@ services:
     add_comment:
         image: mcr.microsoft.com/mssql-tools
         container_name: mssql-tools
-        command: /opt/mssql-tools/bin/sqlcmd -S schemaspy-sqlserver -U sa -P Password@12345 -i /sql/add_comment.sql
+        command: /opt/mssql-tools/bin/sqlcmd -S ${SQLSERVER_HOST} -U ${SQLSERVER_USER} -P ${SQLSERVER_PASS} -i /sql/add_comment.sql
         volumes: 
             - ./sql:/sql
         networks: 
@@ -61,7 +61,7 @@ services:
             - ./mssql-jdbc-8.4.1.jre8.jar:/drivers/mssql-jdbc-8.4.1.jre8.jar
         networks: 
             - schemaspy_net
-        command: -vizjs
+        command: -vizjs -host ${SQLSERVER_HOST} -u ${SQLSERVER_USER} -p ${SQLSERVER_PASS}
 networks:
     schemaspy_net:
         external: false
