@@ -1,17 +1,20 @@
 .PHONY: build
 
+export SQLSERVER_HOST=schemaspy-sqlserver
+export SQLSERVER_USER=sa
+export SQLSERVER_PASS=Password@12345
 
 TAR = sqljdbc_8.4.1.0_jpn.tar.gz
 JAR = mssql-jdbc-8.4.1.jre8.jar
 
 build : ${JAR}
 	docker-compose up -d --build db
-	sleep 15
 
-	docker-compose run create_db
-	docker-compose run create_table
-	docker-compose run add_comment
-	docker-compose run schemaspy
+	docker-compose run --rm wait_db
+	docker-compose run --rm create_db
+	docker-compose run --rm create_table
+	docker-compose run --rm add_comment
+	docker-compose run --rm schemaspy
 
 	docker-compose down
 

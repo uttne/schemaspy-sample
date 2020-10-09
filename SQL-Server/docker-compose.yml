@@ -11,6 +11,20 @@ services:
         networks: 
             - schemaspy_net
     
+    # SQL Server の立ち上がりを待機する
+    wait_db:
+        image: mcr.microsoft.com/mssql-tools
+        container_name: mssql-tools
+        environment: 
+            - SQLSERVER_HOST=${SQLSERVER_HOST}
+            - SQLSERVER_USER=${SQLSERVER_USER}
+            - SQLSERVER_PASS=${SQLSERVER_PASS}
+        command: bash wait_db.sh
+        volumes: 
+            - ./wait_db.sh:/wait_db.sh
+        networks: 
+            - schemaspy_net
+    
     # SQL を実行し DB を初期化する
     create_db:
         image: mcr.microsoft.com/mssql-tools
