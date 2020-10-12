@@ -1,4 +1,4 @@
-.PHONY: build
+.PHONY: build clean
 
 export SQLSERVER_HOST=schemaspy-sqlserver
 export SQLSERVER_USER=sa
@@ -15,6 +15,9 @@ build : ${JAR}
 	docker-compose run --rm create_table
 	docker-compose run --rm schemaspy
 
+	docker-compose down
+
+clean : 
 	docker-compose down
 
 ${JAR} : ${TAR}
