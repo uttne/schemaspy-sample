@@ -13,7 +13,6 @@ build : ${JAR}
 	docker-compose run --rm wait_db
 	docker-compose run --rm create_db
 	docker-compose run --rm create_table
-	docker-compose run --rm add_comment
 	docker-compose run --rm schemaspy
 
 	docker-compose down
