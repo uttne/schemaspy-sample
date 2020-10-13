@@ -1,0 +1,54 @@
+version: '3'
+services:
+    # SQL Server を立ち上げる
+    db:
+        image: postgres:13.0
+        container_name: ${SERVER_HOST}
+        environment: 
+            - POSTGRES_DB=${SERVER_DB}
+            - POSTGRES_USER=${SERVER_USER}
+            - POSTGRES_PASSWORD=${SERVER_PASS}
+        networks: 
+            - schemaspy_net
+
+    # SQL Server の立ち上がりを待機する
+    wait_db:
+        image: postgres:13.0
+        container_name: psql
+        environment: 
+            - SERVER_HOST=${SERVER_HOST}
+            - SERVER_DB=${SERVER_DB}
+            - SERVER_USER=${SERVER_USER}
+        command: bash -c "cp /.pgpass ~/.pgpass && chmod 0600 ~/.pgpass && bash wait_db.sh"
+        volumes: 
+            - ./wait_db.sh:/wait_db.sh
+            - ./.pgpass:/.pgpass
+        networks: 
+            - schemaspy_net
+    
+    # SQL を実行し DB を初期化する
+    create_table:
+        image: postgres:13.0
+        container_name: mssql-tools
+        command: bash -c "cp /.pgpass ~/.pgpass && chmod 0600 ~/.pgpass && /usr/bin/psql -h ${SERVER_HOST} -d ${SERVER_DB} -U ${SERVER_USER} -f /sql/create_table.sql"
+        # command: bash -c "cp /.pgpass ~/.pgpass && chmod 0600 ~/.pgpass && /usr/bin/psql -h ${SERVER_HOST} -d ${SERVER_DB} -U ${SERVER_USER} -c \"SELECT 1;\""
+        volumes: 
+            - ./sql:/sql
+            - ./.pgpass:/.pgpass
+        networks: 
+            - schemaspy_net
+
+    # ドキュメントを作成する
+    schemaspy:
+        image: schemaspy/schemaspy:snapshot
+        container_name: schemaspy
+        volumes: 
+            - ./output:/output
+            - ./schemaspy.properties:/schemaspy.properties
+        networks: 
+            - schemaspy_net
+        command: -vizjs -host ${SERVER_HOST} -u ${SERVER_USER} -p ${SERVER_PASS}
+        # command: -dbHelp
+networks:
+    schemaspy_net:
+        external: false
