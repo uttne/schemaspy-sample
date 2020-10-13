@@ -42,14 +42,6 @@ services:
             - ./sql:/sql
         networks: 
             - schemaspy_net
-    add_comment:
-        image: mcr.microsoft.com/mssql-tools
-        container_name: mssql-tools
-        command: /opt/mssql-tools/bin/sqlcmd -S ${SQLSERVER_HOST} -U ${SQLSERVER_USER} -P ${SQLSERVER_PASS} -i /sql/add_comment.sql
-        volumes: 
-            - ./sql:/sql
-        networks: 
-            - schemaspy_net
 
     # ドキュメントを作成する
     schemaspy:
