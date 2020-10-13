@@ -5,11 +5,11 @@ if [ -z ${SQLSERVER_HOST+x} ] ; then
 fi
 
 if [ -z ${SQLSERVER_USER+x} ] ; then
-  echo "'SQLSERVER_HOST' is not found."
+  echo "'SQLSERVER_USER' is not found."
 fi
 
 if [ -z ${SQLSERVER_PASS+x} ] ; then
-  echo "'SQLSERVER_HOST' is not found."
+  echo "'SQLSERVER_PASS' is not found."
 fi
 
 
