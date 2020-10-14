@@ -14,7 +14,7 @@ services:
     # SQL Server の立ち上がりを待機する
     wait_db:
         image: postgres:13.0
-        container_name: psql
+        container_name: wait_db
         environment: 
             - SERVER_HOST=${SERVER_HOST}
             - SERVER_DB=${SERVER_DB}
@@ -29,9 +29,8 @@ services:
     # SQL を実行し DB を初期化する
     create_table:
         image: postgres:13.0
-        container_name: mssql-tools
+        container_name: create_table
         command: bash -c "cp /.pgpass ~/.pgpass && chmod 0600 ~/.pgpass && /usr/bin/psql -h ${SERVER_HOST} -d ${SERVER_DB} -U ${SERVER_USER} -f /sql/create_table.sql"
-        # command: bash -c "cp /.pgpass ~/.pgpass && chmod 0600 ~/.pgpass && /usr/bin/psql -h ${SERVER_HOST} -d ${SERVER_DB} -U ${SERVER_USER} -c \"SELECT 1;\""
         volumes: 
             - ./sql:/sql
             - ./.pgpass:/.pgpass
