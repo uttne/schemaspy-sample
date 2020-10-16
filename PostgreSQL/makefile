@@ -18,6 +18,7 @@ build : ${PGPASS}
 
 clean : 
 	docker-compose down
+	bash -c "if [ -d ./output ]; then rm -rf ./output; fi"
 
 ${PGPASS} : 
 	echo "${SERVER_HOST}:5432:${SERVER_DB}:${SERVER_USER}:${SERVER_PASS}" > ${PGPASS}

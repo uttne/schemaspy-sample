@@ -19,6 +19,7 @@ build : ${JAR}
 
 clean : 
 	docker-compose down
+	bash -c "if [ -d ./output ]; then rm -rf ./output; fi"
 
 ${JAR} : ${TAR}
 	tar zxvf ${TAR}
